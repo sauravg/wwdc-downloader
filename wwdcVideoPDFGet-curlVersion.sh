@@ -1010,7 +1010,7 @@ case "${YEAR}" in
 
     if [ ${EVENT} == "wwdc" ];
 	then
-		VIDEO_URL=${VIDEO_URL_WWDC}/2015/
+		VIDEO_URL=${VIDEO_URL_WWDC}2015/
 		doGetWWDC2015 ${ituneslogin} ${itunespassword} ${FORMAT}
 	elif [ ${EVENT} == "tech-talks" ];
 	then
