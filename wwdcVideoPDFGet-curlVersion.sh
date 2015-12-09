@@ -546,7 +546,10 @@ doGetWWDC2015 () {
         curl -silent ${VIDEO_URL} > $TMP_DIR/video.html
     fi
 
-    cat ${TMP_DIR}/video.html | sed -e '/class="inner_v_section"/,/<\/section>/!d' > $TMP_DIR/video-cleaned.html
+    cat ${TMP_DIR}/video.html |  pup 'a[href^=/video]:parent-of(h5) attr{href}' > $TMP_DIR/video-urls.txt
+    cat ${TMP_DIR}/video-urls.txt | sed 's@/.*-\([0-9]*\).*@\1@' > $TMP_DIR/video-sessions.txt
+    cat ${TMP_DIR}/video.html |  pup -p 'a[href^=/video]:parent-of(h5) h5 text{}'  > $TMP_DIR/video-titles.txt
+    paste ${TMP_DIR}/video-sessions.txt ${TMP_DIR}/video-titles.txt > ${TMP_DIR}/video-cleaned.html
 
 	if [ -f ${TMP_DIR}/titles.txt ] ; then
 		rm ${TMP_DIR}/titles.txt
@@ -554,8 +557,9 @@ doGetWWDC2015 () {
     cat ${TMP_DIR}/video-cleaned.html | while read line; do 
         # domain if for future use ...
         #domain=`echo $line | grep -o -E '<h6>(.*)</h6>' | cut -d'<' -f2 | cut -d'>' -f2`
-		sessionNum=`echo $line | grep -o -E '<a(.*)</a>' | cut -d'=' -f3 | cut -d'"' -f1`
-        title_array[$sessionNum]=`echo $line | grep -o -E '<a(.*)</a>' | cut -d'>' -f2 | cut -d'<' -f1`
+        # we must use SPACE as the delimeter even though the file has \t. At least on osx, readline seems to convert \t to SP
+		sessionNum=`echo $line | cut -d' ' -f1`
+        title_array[$sessionNum]="`echo $line | cut -d' ' -f2-`"
         echo "$sessionNum;${title_array[$sessionNum]}" >> $TMP_DIR/titles.txt
 	done
 
