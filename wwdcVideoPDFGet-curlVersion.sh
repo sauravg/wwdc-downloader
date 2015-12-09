@@ -650,8 +650,12 @@ doGetWWDC2015 () {
     
     # get individuals video pages
     cat ${TMP_DIR}/titles.txt | cut -d';' -f1 | while read line; do 
-        curl -silent "${VIDEO_URL}?id=$line" > "${TMP_DIR}/$line-video.html";
-        videoURL=`cat ${TMP_DIR}/$line-video.html | grep -o -E 'href="(http:\/\/devstreaming.apple.com\/videos\/wwdc\/'${YEAR}'/'${REGEXFILE}'\?dl=1+)"'| cut -d'"' -f2`
+        VIDEO_URL_LINE=`echo ${VIDEO_URL} | sed "s/\/$/-$line\//"`
+        VIDEO_URL_LINE=`echo ${VIDEO_URL_LINE} | sed "s/\/videos/\/videos\/play/"`
+        echo Video URL page is ${VIDEO_URL_LINE}
+        curl -silent "${VIDEO_URL_LINE}" > "${TMP_DIR}/$line-video.html";
+        videoURL=`cat ${TMP_DIR}/$line-video.html | pup source[src$=m3u8] attr{src}`
+        echo Downloading video from $videoURL
         pdfURL=`echo ${videoURL} | sed 's/_'${LC_FORMAT}'_/_/g' | sed 's/\.mp4/\.pdf/g'`
         #echo ${line}: ${pdfURL}
         
