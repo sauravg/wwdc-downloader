@@ -712,14 +712,17 @@ doGetWWDC2015 () {
                     curl "${pdfURL}" > "${dest_path}.download" && mv "${dest_path}.download" "${dest_path}"
                 fi
 
-                # downloading video files
-                dest_path="${WWDC_DIRNAME}/${FORMAT}-VIDEOs/${line} - ${title_array[$line]}-${FORMAT}.mov"
+                # downloading video files with ffmpeg requires a versatile target filetype since we don't
+                # know the codecs and we don't want ffmpeg to transcode while downloading.
+                dest_path="${WWDC_DIRNAME}/${FORMAT}-VIDEOs/${line} - ${title_array[$line]}-${FORMAT}.mkv"
                 if [ -f "${dest_path}" ]
                 then
                     echo "${dest_path} already downloaded (nothing to do!)"
                 else
                     echo "downloading ${FORMAT} Video for session ${line}: ${title_array[$line]}" 
-                    curl "${videoURL}" > "${dest_path}.download" && mv "${dest_path}.download" "${dest_path}"
+                    # TODO: we can only download to a file with extension that ffmpeg understands. So no downloading to something with
+                    # .download suffix and then renaming. Fix this by inserting some tag before the file extension
+                    ffmpeg -nostats -i "${videoURL}" -c copy "${dest_path}"
                 fi
 
                 # downloading sample codes files
@@ -766,7 +769,7 @@ doGetWWDC2015 () {
                 echo "${dest_path} already downloaded (nothing to do!)"
             else
                 echo "downloading ${FORMAT} Video for session ${line}: ${title_array[$line]}" 
-                curl -L "${videoURL}" > "${dest_path}.download" && mv "${dest_path}.download" "${dest_path}"
+                ffmpeg -i "${videoURL}" -c copy "${dest_path}.download" && mv "${dest_path}.download" "${dest_path}"
             fi
 
             # downloading sample codes files
