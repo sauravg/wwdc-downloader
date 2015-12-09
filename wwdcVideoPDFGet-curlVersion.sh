@@ -503,6 +503,11 @@ doGet2012 () {
 	rm -Rf ${TMP_DIR}
 }
 
+sessionWanted () {
+    sess=$1
+    test ${SELECTIVE_SESSION_MODE} == false || echo "${SESSION_WANTED}" | fgrep -q $sess
+}
+
 
 #**************************************************************************************#
 #                                   WWDC 2015                                          #
@@ -650,6 +655,10 @@ doGetWWDC2015 () {
     
     # get individuals video pages
     cat ${TMP_DIR}/titles.txt | cut -d';' -f1 | while read line; do 
+        if ! sessionWanted $line
+        then
+            continue
+        fi
         VIDEO_URL_LINE=`echo ${VIDEO_URL} | sed "s/\/$/-$line\//"`
         VIDEO_URL_LINE=`echo ${VIDEO_URL_LINE} | sed "s/\/videos/\/videos\/play/"`
         echo Video URL page is ${VIDEO_URL_LINE}
