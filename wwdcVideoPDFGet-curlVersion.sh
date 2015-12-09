@@ -563,8 +563,6 @@ doGetWWDC2015 () {
         echo "$sessionNum;${title_array[$sessionNum]}" >> $TMP_DIR/titles.txt
 	done
 
-    #`sed -n '/^,/!p' $TMP_DIR/titles.txt > $TMP_DIR/titles.txt.tmp && mv $TMP_DIR/titles.txt.tmp $TMP_DIR/titles.txt` 
-    `sed '/^;/d' $TMP_DIR/titles.txt > $TMP_DIR/titles.txt.tmp && mv $TMP_DIR/titles.txt.tmp $TMP_DIR/titles.txt` 
 
     # escape special char for downloading issues (ex: I/O string)
     # Ok this is dirty, but quick ! ;)
